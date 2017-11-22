@@ -1,6 +1,9 @@
 from util import SaxTerminal
 import util
 
+## an adaptation of https://github.com/mspandit/sequitur-python
+## which is a Python port of Sequitur implementation by Craig Nevill-Manning and Ian Witten
+
 class Grammar(object):
     """docstring for Grammar"""
     def __init__(self):

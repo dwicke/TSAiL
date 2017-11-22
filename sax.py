@@ -11,6 +11,8 @@ class DictionarySizeIsNotSupported(Exception): pass
 class SAX(object):
     """
     This class is for computing the Symbolic Aggregate approXimation
+    adapted from https://github.com/nphoff/saxpy
+    and was under an MIT liscence
     """
 
     def __init__(self, wordSize = 8, alphabetSize = 7, epsilon = 1e-6):
