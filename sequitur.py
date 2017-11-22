@@ -19,7 +19,6 @@ class Grammar(object):
             # now check to see if this digram exists
             match = self.get_index(self.root_production.last().prev)
             if not match: ## if it doesn't exist
-                print("Not matched so adding to index {}".format(self.root_production.last().prev.value()))
                 self.add_index(self.root_production.last().prev)
             elif match.next != self.root_production.last().prev: ## if the next isn't the same as the prev
                 self.root_production.last().prev.process_match(match)

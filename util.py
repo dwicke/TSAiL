@@ -52,10 +52,6 @@ class SaxTerminal(object):
 
 	def __eq__(self, RHS):
 		if (type(self) == type(RHS)):
-			print("equal comp")
-			print(self.string)
-			print(RHS.string)
-			print("end equ comp")
 			return self.string == RHS.string
 		return False
 	def __ne__(self, RHS):
