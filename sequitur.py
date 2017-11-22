@@ -1,5 +1,5 @@
-from utils.saxterminal import SaxTerminal
-import utils
+from util import SaxTerminal
+import util
 
 class Grammar(object):
     """docstring for Grammar"""
@@ -68,8 +68,7 @@ class Grammar(object):
             output_array = []
             if i > 0:
                 line_length = rule.print_rule_expansion(rule_set, output_array, 0)
-
-            theRules.append(utils.Rule(i, rule.reference_count, beforeExpansion, output_array, rule.positions))
+            theRules.append(util.Rule(i, rule.reference_count, beforeExpansion, output_array, rule.positions))
             i += 1
         return theRules
 
@@ -96,12 +95,7 @@ class Rule(object):
     def decrement_reference_count(self): self.reference_count -= 1
 
     def add_position(self, pos): 
-        print("adding pos {} to rule number {}".format(pos, self.unique_number))
-        print("all pos:")
         self.positions.append(pos)
-        for a in self.positions:
-            print(a)
-        print("done adding")
 
     def print_rule(self, rule_set, output_array, line_length):
         """docstring for print_rule"""
@@ -149,7 +143,6 @@ class Symbol(object):
     @staticmethod
     def factory(grammar, value):
         """docstring for factory"""
-        from rule import Rule
         if (SaxTerminal == type(value)):
             return Terminal(grammar, value, value.getID())
         elif (Terminal == type(value)):
@@ -256,7 +249,6 @@ class Symbol(object):
 
     def process_match(self, match):
         """Deal with a matching digram"""
-        from rule import Rule
         rule = None
         if (match.prev.is_guard() and match.next.next.is_guard()):
             # reuse an existing rule

@@ -3,7 +3,7 @@
 import os
 import numpy as np
 import math
-from utils.saxterminal import SaxTerminal
+from util import SaxTerminal
 
 class DictionarySizeIsNotSupported(Exception): pass
 
