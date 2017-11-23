@@ -15,9 +15,9 @@ class Motif(object):
 	def buildMotifs(self):
 		s = SAX(self.wordSize, self.alphabetSize)
 		self.saxterms = s.sliding_window(self.timeseries, self.windowSize)
-		g = Grammar()
-		g.train_string(self.saxterms)
-		self.myrules = g.getRules()
+		self.grammar = Grammar()
+		self.grammar.train_string(self.saxterms)
+		self.myrules = self.grammar.getRules()
 
 	def getRules(self):
 		return self.myrules

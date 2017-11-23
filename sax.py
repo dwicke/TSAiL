@@ -15,8 +15,8 @@ class SAX(object):
     and was under an MIT liscence
     """
 
-    def __init__(self, wordSize = 8, alphabetSize = 7, epsilon = 1e-6):
-
+    def __init__(self, wordSize = 8, alphabetSize = 7, epsilon = 0.001):
+        ## 0.001 fro epsilon is standard see https://github.com/jMotif/SAX/search?utf8=%E2%9C%93&q=SAX_NORM_THRESHOLD&type=
         if alphabetSize < 3 or alphabetSize > 20:
             raise DictionarySizeIsNotSupported()
         self.aOffset = ord('a')

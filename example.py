@@ -3,14 +3,21 @@
 # from util import Rule
 # from util import SaxTerminal
 from motif import Motif
+from rra import RRA
 import numpy as np
 
 timeseries = np.loadtxt('ecg0606_1.csv', delimiter="\n")
-m = Motif(timeseries, 100, 4, 4)
+
+
+m = Motif(timeseries, 170, 4, 4)
 m.buildMotifs()
-motif = m.getMotif(1)
-for k in motif:
-	print(k)
+anonamly = RRA(timeseries, m)
+nndist, span = anonamly.getAnomalies(4)
+
+print("nearest neighbor dist = {} span = ({},{})".format(nndist, span[0], span[1]))
+# motif = m.getMotif(1)
+# for k in motif:
+# 	print(k)
 
 
 # a = [SaxTerminal("ug",(-1,3), 0), SaxTerminal("ug",(0,4), 1), SaxTerminal("hi",(1,5), 2), SaxTerminal("yo",(2,6), 3), SaxTerminal("ga",(3,7), 4), SaxTerminal("hi",(4,8), 5),SaxTerminal("yo",(5,9), 6),SaxTerminal("bo",(6,10), 7)]
