@@ -1,4 +1,5 @@
 import numpy
+import random
 from sax import SAX
 
 
@@ -16,6 +17,7 @@ class RRA(object):
 		self.motifs = motifs
 		# get the rules sorted by ascending order of coverage
 		self.rulesByCoverage = sorted(self.motifs.grammar.getRules()[1:], key=lambda x: len(x.positions), reverse=False)
+		self.rules = self.motifs.grammar.getRules()
 
 	def dist(self, p, q):
 		s = SAX(wordSize=min(len(self.timeseries[p[0]:p[1]]), len(self.timeseries[q[0]:q[1]])))
@@ -34,17 +36,29 @@ class RRA(object):
 			for outerSpan in self.motifs.getMotif(outerRule.ruleNum):
 				nearest_neighbor_dist = float("inf")
 				# need to do a -1 to the ruleNum because that corresponds to a zero indexed array where 0 is the root of the grammar which was removed
-				for innerRule in [self.rulesByCoverage[outerRule.ruleNum - 1]] + self.rulesByCoverage[min(len(self.rulesByCoverage),outerRule.ruleNum ):] + self.rulesByCoverage[:outerRule.ruleNum - 1]:
-					for innerSpan in self.motifs.getMotif(innerRule.ruleNum):
-						if abs(outerSpan[0] - innerSpan[0]) >= (outerSpan[1] - outerSpan[0]):
-							current_dist = self.dist(outerSpan, innerSpan)
-							# early breaking:
-							if current_dist < best_so_far_dist:
-								break
-							if current_dist < nearest_neighbor_dist:
-								nearest_neighbor_dist = current_dist
-				if nearest_neighbor_dist != float("inf") and nearest_neighbor_dist > best_so_far_dist:
+				nearest_neighbor_dist = self.inner([self.rules[outerRule.ruleNum]], outerSpan, best_so_far_dist, nearest_neighbor_dist)
+				if nearest_neighbor_dist >= best_so_far_dist:
+					therest = self.rules[1:outerRule.ruleNum] + self.rules[outerRule.ruleNum  + 1:]
+					therest = random.sample(therest, len(therest))
+					nearest_neighbor_dist = self.inner(therest, outerSpan, best_so_far_dist, nearest_neighbor_dist)
+					
+				if nearest_neighbor_dist > best_so_far_dist:
 					best_so_far_dist = nearest_neighbor_dist
 					best_so_far_loc = outerSpan
+				
+				
+				
 
 		return (best_so_far_dist, best_so_far_loc)
+
+	def inner(self, innerRules, outerSpan, best_so_far_dist, nearest_neighbor_dist):
+		for innerRule in innerRules:
+			for innerSpan in self.motifs.getMotif(innerRule.ruleNum):
+				if abs(outerSpan[0] - innerSpan[0]) >= (outerSpan[1] - outerSpan[0]):
+					current_dist = self.dist(outerSpan, innerSpan)
+					# early breaking:
+					if current_dist < best_so_far_dist:
+						return current_dist
+					if current_dist < nearest_neighbor_dist:
+						nearest_neighbor_dist = current_dist
+		return nearest_neighbor_dist
