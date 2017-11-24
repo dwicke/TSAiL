@@ -3,7 +3,9 @@
 import os
 import numpy as np
 import math
+import time
 from util import SaxTerminal
+import itertools 
 
 class DictionarySizeIsNotSupported(Exception): pass
 
@@ -43,7 +45,7 @@ class SAX(object):
                             '20': [-1.64, -1.28, -1.04, -0.84, -0.67, -0.52, -0.39, -0.25, -0.13, 0, 0.13, 0.25, 0.39, 0.52, 0.67, 0.84, 1.04, 1.28, 1.64]
                             }
         self.beta = self.breakpoints[str(self.alphabetSize)]
-
+        self.paaTime = 0.
     
 
     def to_letter_rep(self, x):
@@ -60,10 +62,18 @@ class SAX(object):
         epsilon, in which case it returns an array of zeros the length
         of the original array.
         """
+        start = time.time()
         X = np.asanyarray(x)
-        if X.std() < self.eps:
-            return [0 for entry in X]
-        return (X-X.mean())/X.std()
+        stdDev = X.std()
+        if stdDev < self.eps:
+            normalized =  [0 for entry in X]
+            end = time.time()
+            self.paaTime += end - start
+            return normalized
+        normalized =  (X-X.mean())/stdDev
+        end = time.time()
+        self.paaTime += end - start
+        return normalized
 
     def to_PAA(self, x):
         """
@@ -72,20 +82,38 @@ class SAX(object):
         dimension data set, as well as the indices corresponding to the original
         data for each reduced dimension
         """
+        
         n = len(x)
         stepFloat = n/float(self.wordSize)
         step = int(math.ceil(stepFloat))
         frameStart = 0
-        approximation = []
-        indices = []
+        approximation = [0.0]*self.wordSize
+        indices = [[0,0]]*self.wordSize
         i = 0
         while frameStart <= n-step:
-            thisFrame = np.array(x[frameStart:int(frameStart + step)])
-            approximation.append(np.mean(thisFrame))
-            indices.append((frameStart, int(frameStart + step)))
+            
+            #thisFrame = x[frameStart:int(frameStart + step)]  
+            #start = time.time()
+            mysum = 0.
+            count = 0.
+            for a in range(frameStart,int(frameStart + step)):
+                mysum += x[a]
+                count += 1.
+            
+            #end = time.time()
+            #approximation.append(mysum / count)
+            approximation[i] = mysum / count
+            
+            #approximation.append(mysum / float(len(thisFrame)))
+            #approximation.append(np.mean(thisFrame))
+            #indices.append((frameStart, int(frameStart + step)))
+            indices[i] = frameStart, int(frameStart + step)
+            
             i += 1
             frameStart = int(i*stepFloat)
-        return (np.array(approximation), indices)
+            
+            #self.paaTime += end - start
+        return (approximation, indices)
 
     def alphabetize(self,paaX):
         """

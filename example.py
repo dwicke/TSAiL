@@ -9,12 +9,12 @@ import numpy as np
 timeseries = np.loadtxt('ecg0606_1.csv', delimiter="\n")
 
 
-m = Motif(timeseries, 170, 4, 4)
+m = Motif(timeseries, 200, 4, 4)
 m.buildMotifs()
 anonamly = RRA(timeseries, m)
 nndist, span = anonamly.getAnomalies(4)
 
-print("nearest neighbor dist = {} span = ({},{})".format(nndist, span[0], span[1]))
+print("nearest neighbor dist = {} span = ({},{}) distance calls = {}".format(nndist, span[0], span[1], anonamly.distCalls))
 # motif = m.getMotif(1)
 # for k in motif:
 # 	print(k)
